@@ -2,13 +2,33 @@
 
 import React, {useState} from 'react';
 import TagList from '@/components/TagList';
+import {useRouter} from 'next/navigation';
 
 export default function Header() {
     const[searchQuery, setSearchQuery] = useState('');
+    const router = useRouter();
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchQuery(event.target.value);
-        //TODO: search / fiter logic implementation here
+        const newSearchQuery = event.target.value;
+        setSearchQuery(newSearchQuery);
+        updateQueryParams('search', newSearchQuery);
     };
+
+    const handleTagSelect = (tag:string) => {
+        setSearchQuery(tag);
+        updateQueryParams('tag', tag);
+    };
+
+    const updateQueryParams = (key: string, value: string) => {
+        const params = new URLSearchParams(window.location.search);
+        if (value){
+            params.set(key, value);
+        }
+        else{
+            params.delete(key);
+        }
+        router.push(`?${params.toString()}`);
+    };
+
     return (
         <header className={"my-4"}>
             <div className={"input-group mb-3"}>
@@ -20,7 +40,7 @@ export default function Header() {
                     onChange={handleSearchChange}
                 />
             </div>
-            <TagList onTagSelect={(tag) => setSearchQuery(tag)} />
+            <TagList onTagSelect={handleTagSelect} />
         </header>
     );
 }

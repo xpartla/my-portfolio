@@ -1,20 +1,38 @@
 import Link from "next/link";
 import GalleryGrid from "@/components/GalleryGrid";
 
-export default function Home(){
-    const filmImages = [
-        {id:1, src: '/images/image1.jpg', alt: 'Film Image 1'},
-    ];
+type Image = {
+    id: number;
+    filename: string;
+    title: string;
+    description: string;
+    category: string;
+    src: string;
+    alt: string;
+};
 
-    const digitalImages = [
-        {id:1, src: '/images/image2.jpg', alt: 'Digital Image 2'},
-    ];
+async function fetchImages(category:string): Promise<Image[]> {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    const res = await fetch(`${baseUrl}/api/images?category=${category}`);
+    const data = await res.json();
+    return data.map((img: Image) => ({
+        id: img.id,
+        src: `/images/${img.filename}`,
+        alt: img.title,
+    }));
+}
+
+
+export default async function Home() {
+    const filmImages = await fetchImages('film');
+    const digitalImages = await fetchImages('digital');
+
     return (
         <div className={"row"}>
             {/*Film Gallery*/}
             <div className={"col-md-6 text-center"}>
                 <h2>Film Photography</h2>
-                <GalleryGrid images={filmImages} />
+                <GalleryGrid images={filmImages}/>
                 <Link href={"/gallery/film"}>
                     <button className={"btn btn-primary mt-3"}>Explore film</button>
                 </Link>
@@ -22,7 +40,7 @@ export default function Home(){
             {/* Digital gallery */}
             <div className={"col-md-6 text-center"}>
                 <h2>Digital Photography</h2>
-                <GalleryGrid images={digitalImages} />
+                <GalleryGrid images={digitalImages}/>
                 <Link href={"/gallery/digital"}>
                     <button className={"btn btn-primary mt-3"}>Explore Digital</button>
                 </Link>

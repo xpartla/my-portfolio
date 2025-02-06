@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 type Image = {
     id:number;
@@ -10,12 +11,13 @@ export default function GalleryGrid({images}: {images: Image[]}) {
     return (
         <div className={"row"}>
             {images.map((image)=>(
-                <div key={image.id} className={"col-6 col-md-4 mb-4"}>
-                    <img
+                <div key={image.id} className={"col-6 col-md-4 mb-4 position-relative"} style={{height: "200px"}}>
+                    <Image
                     src={image.src}
                     alt={image.alt}
+                    fill
                     className="img-fluid"
-                    style={{maxHeight: "200px", objectFit: "cover"}}
+                    style={{objectFit: "scale-down"}}
                     />
                 </div>
             ))}
