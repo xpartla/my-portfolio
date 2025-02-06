@@ -1,5 +1,5 @@
 'use client';
-import {useParams, useSearchParams} from 'next/navigation';
+import {useSearchParams} from 'next/navigation';
 import {useEffect, useState} from 'react';
 import GalleryGrid from "@/components/GalleryGrid";
 
@@ -10,7 +10,6 @@ type Image = {
 };
 
 export default function GalleryCategoryPage(){
-    const {category} = useParams();
     const searchParams = useSearchParams();
     const [images, setImages] = useState<Image[]>([]);
     const [loading, setLoading] = useState(true);
@@ -19,7 +18,7 @@ export default function GalleryCategoryPage(){
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await fetch(`/api/images?category=${category}&search=${searchQuery}&tag=${selectedTag}`);
+                const res = await fetch(`/api/images?tag=${selectedTag}&search=${searchQuery}`);
                 const data = await res.json();
                 setImages(data.map((img: any) => ({
                     id: img.id,
@@ -35,14 +34,14 @@ export default function GalleryCategoryPage(){
             }
         };
         fetchData();
-    }, [category, searchQuery, selectedTag]);
+    }, [searchQuery, selectedTag]);
 
     if (loading) {
         return <p>Loading...</p>;
     }
     return (
         <div>
-            <h1 className={"text-center mb-4"}> {category} Photography</h1>
+            <h1 className={"text-center mb-4"}> {selectedTag} Photography</h1>
             <GalleryGrid images={images}/>
         </div>
     );

@@ -13,3 +13,18 @@ export async function GET(){
         return NextResponse.json({error: "failed to fetch tags"}, {status: 500});
     }
 }
+
+export async function POST(request: Request){
+    const {name} = await request.json();
+
+    try{
+        const tag = await prisma.tag.create({
+            data: {name: name},
+        });
+        return NextResponse.json(tag, {status: 201});
+    }
+    catch(err){
+        console.error("Error creating tag", err);
+        return NextResponse.json({error: "failed to create tag", status: 500});
+    }
+}

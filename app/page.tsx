@@ -6,14 +6,13 @@ type Image = {
     filename: string;
     title: string;
     description: string;
-    category: string;
     src: string;
     alt: string;
 };
 
-async function fetchImages(category:string): Promise<Image[]> {
+async function fetchImages(tag:string): Promise<Image[]> {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-    const res = await fetch(`${baseUrl}/api/images?category=${category}`);
+    const res = await fetch(`${baseUrl}/api/images?tag=${tag}`);
     const data = await res.json();
     return data.map((img: Image) => ({
         id: img.id,
@@ -33,7 +32,7 @@ export default async function Home() {
             <div className={"col-md-6 text-center"}>
                 <h2>Film Photography</h2>
                 <GalleryGrid images={filmImages}/>
-                <Link href={"/gallery/film"}>
+                <Link href={"/gallery?tag=film"}>
                     <button className={"btn btn-primary mt-3"}>Explore film</button>
                 </Link>
             </div>
@@ -41,7 +40,7 @@ export default async function Home() {
             <div className={"col-md-6 text-center"}>
                 <h2>Digital Photography</h2>
                 <GalleryGrid images={digitalImages}/>
-                <Link href={"/gallery/digital"}>
+                <Link href={"/gallery?tag=digital"}>
                     <button className={"btn btn-primary mt-3"}>Explore Digital</button>
                 </Link>
             </div>

@@ -18,7 +18,6 @@ model Image {
   title       String
   description String?
   filename    String
-  category    String
   tags        Tag[]     @relation("ImageTags")
   createdAt   DateTime  @default(now())
 }

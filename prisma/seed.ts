@@ -13,7 +13,6 @@ async function main() {
             title:"Film Image 1",
             description: "Nature captured on film",
             filename: "image1.jpg",
-            category: "film",
             tags:{
                 connect: [{id:tag1.id}, {id:tag3.id}],
             },
@@ -25,7 +24,6 @@ async function main() {
             title: 'Digital Image 1',
             description: 'A stunning digital capture.',
             filename: 'image2.jpg',
-            category: 'digital',
             tags: {
                 connect: [{ id: tag2.id }, { id: tag4.id }], // Connect tags by ID
             },
@@ -37,7 +35,6 @@ async function main() {
             title: 'Film Image 2',
             description: 'A stunning film capture.',
             filename: 'image3.jpg',
-            category: 'film',
             tags: {
                 connect: [{ id: tag2.id }, { id: tag3.id }], // Connect tags by ID
             },
