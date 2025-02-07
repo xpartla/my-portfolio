@@ -1,60 +1,31 @@
 import {NextResponse} from "next/server";
 import {PrismaClient} from "@prisma/client"
 import path from "path";
-import formidable from "formidable";
-import {Readable} from "node:stream";
-import {IncomingMessage} from "node:http";
+import {promises as fs} from "fs";
 
-const prisma = new PrismaClient()
-const uploadDir = path.resolve(process.cwd(), "public/images");
-
-export const config = {
-    api: {
-        bodyParser: false,
-    }
-}
-
-function requestToReadable(request: Request) {
-    const reader = request.body?.getReader(); // Web API ReadableStream reader
-    return new Readable({
-        async read() {
-            if (!reader) return this.push(null);
-            const {done, value} = await reader.read();
-            if (done) return this.push(null);
-            this.push(value);
-        },
-    });
-}
-
-async function parseForm(request: Request){
-    const form = formidable({uploadDir, keepExtensions: true});
-
-    return new Promise((resolve, reject) => {
-        const readableStream = requestToReadable(request);
-        if (readableStream instanceof IncomingMessage) {
-            form.parse(readableStream, (err: any, fields: any, files: any) => {
-                if (err) reject(err);
-                resolve({fields, files});
-            });
-        }
-    });
-}
+const prisma = new PrismaClient();
+const uploadDir = path.join(process.cwd(), "public/images");
 
 export async function POST(request: Request){
     try{
-        const {fields, files}: any = await parseForm(request);
+        const formData = await request.formData();
+        const imageFile = formData.get("image") as File;
+        const title = formData.get("title") as string;
+        const description = formData.get("description") as string;
+        const tags = formData.get("tags") as string;
 
-        const {title, description, tags} = fields;
-        const filename = path.basename(files.image.filePath);
+        const buffer = Buffer.from(await  imageFile.arrayBuffer());
+        const filename = `${Date.now()}-${imageFile.name}`
+        const filePath = path.join(uploadDir, filename);
+        await fs.writeFile(filePath, buffer);
 
-        const tagNames = tags.split(",").map((tag:string) => tag.toLowerCase().trim());
-        const connectOrCreateTags = tagNames.map((tagName: string) => ({
-            where: {name:tagName},
-            create: {name:tagName},
+        const tagNames = tags.split(",").map((tag) => tag.toLowerCase().trim());
+        const connectOrCreateTags = tagNames.map((tagName)=>({
+            where: {name: tagName},
+            create: {name: tagName},
         }));
-
         const image = await prisma.image.create({
-            data: {
+            data:{
                 filename,
                 title,
                 description,
@@ -63,11 +34,12 @@ export async function POST(request: Request){
                 },
             },
         });
-        return NextResponse.json(image,{status:201});
+
+        return NextResponse.json(image, {status: 201});
     }
     catch(err){
-        console.error("Error uploading image", err);
-        return NextResponse.json({error: "failed to upload image", status: 500});
+        console.log("Error uploading image", err);
+        return NextResponse.json("Failed to upload image", {status: 500});
     }
 }
 
@@ -90,6 +62,7 @@ export async function GET(request: Request) {
                 filename: true,
                 title: true,
                 description: true,
+                tags: {select: {name: true}},
             },
 
         });

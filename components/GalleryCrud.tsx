@@ -9,6 +9,7 @@ interface Image {
     title: string;
     description: string;
     filename: string;
+    tags: string;
 }
 
 export default function Gallery() {
@@ -17,7 +18,7 @@ export default function Gallery() {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [tags, setTags] = useState('');
-    const [editingId, setEditingId] = useState<number | null>(null);
+    const [editingImageId, setEditingImageId] = useState<number | null>(null);
 
     useEffect(() => {
         fetchImages();
@@ -50,23 +51,19 @@ export default function Gallery() {
         }
     }
 
-    async function handleEdit(image: Image) {
-        setTitle(image.title);
-        setDescription(image.description);
-        setEditingId(image.id);
+    async function handleEdit(id: number) {
+        setEditingImageId(id);
     }
 
-    async function handleUpdate() {
-        if (!editingId) return;
-
+    async function handleSave(image: Image) {
         try {
-            await axios.put(`/api/images/${editingId}`, {
-                title,
-                description,
-                tags
+            await axios.put(`/api/images/${image.id}`, {
+                title: image.title,
+                description: image.description,
+                tags: image.tags,
             });
             fetchImages();
-            resetForm();
+            setEditingImageId(null);
         } catch (error) {
             console.error('Error updating image', error);
         }
@@ -86,19 +83,47 @@ export default function Gallery() {
         setDescription('');
         setTags('');
         setSelectedImage(null);
-        setEditingId(null);
+        setEditingImageId(null);
+    }
+
+    function handleChange(imageId: number, field: keyof Image, value: string) {
+        setImages((prevImages) =>
+            prevImages.map((img) => (img.id === imageId ? { ...img, [field]: value } : img))
+        );
     }
 
     return (
         <div className="container mt-5">
             <h2 className="mb-4">Gallery</h2>
+
             <div className="mb-3">
-                <input type="file" className="form-control" onChange={(e) => setSelectedImage(e.target.files?.[0] || null)} />
-                <input type="text" className="form-control mt-2" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-                <textarea className="form-control mt-2" placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
-                <input type="text" className="form-control mt-2" placeholder="Tags (comma separated)" value={tags} onChange={(e) => setTags(e.target.value)} />
-                <button className="btn btn-primary mt-2" onClick={editingId ? handleUpdate : handleUpload}>
-                    {editingId ? 'Update' : 'Upload'}
+                <input
+                    type="file"
+                    className="form-control"
+                    onChange={(e) => setSelectedImage(e.target.files?.[0] || null)}
+                />
+                <input
+                    type="text"
+                    className="form-control mt-2"
+                    placeholder="Title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                />
+                <textarea
+                    className="form-control mt-2"
+                    placeholder="Description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                />
+                <input
+                    type="text"
+                    className="form-control mt-2"
+                    placeholder="Tags (comma separated)"
+                    value={tags}
+                    onChange={(e) => setTags(e.target.value)}
+                />
+                <button className="btn btn-primary mt-2" onClick={handleUpload}>
+                    Upload
                 </button>
             </div>
 
@@ -108,15 +133,60 @@ export default function Gallery() {
                         <div className="card">
                             <img src={`/images/${image.filename}`} className="card-img-top" alt={image.title} />
                             <div className="card-body">
-                                <h5 className="card-title">{image.title}</h5>
-                                <p className="card-text">{image.description}</p>
-                                <button className="btn btn-warning me-2" onClick={() => handleEdit(image)}>Edit</button>
-                                <button className="btn btn-danger" onClick={() => handleDelete(image.id)}>Delete</button>
+                                {editingImageId === image.id ? (
+                                    <>
+                                        <input
+                                            type="text"
+                                            className="form-control mb-2"
+                                            value={image.title}
+                                            onChange={(e) => handleChange(image.id, 'title', e.target.value)}
+                                        />
+                                        <textarea
+                                            className="form-control mb-2"
+                                            value={image.description}
+                                            onChange={(e) => handleChange(image.id, 'description', e.target.value)}
+                                        />
+                                        <input
+                                            type="text"
+                                            className="form-control mb-2"
+                                            value={
+                                                Array.isArray(image.tags)
+                                                    ? image.tags.map(tag => tag.name).join(', ')
+                                                    : image.tags
+                                            }
+                                            onChange={(e) => handleChange(image.id, 'tags', e.target.value)}
+                                        />
+                                        <button className="btn btn-success me-2" onClick={() => handleSave(image)}>
+                                            Save
+                                        </button>
+                                        <button className="btn btn-secondary" onClick={() => setEditingImageId(null)}>
+                                            Cancel
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <h5 className="card-title">{image.title}</h5>
+                                        <p className="card-text">{image.description}</p>
+                                        <p className="card-text">
+                                            <strong>Tags:</strong>{' '}
+                                            {Array.isArray(image.tags)
+                                                ? image.tags.map(tag => tag.name).join(', ') || 'No tags'
+                                                : 'No tags'}
+                                        </p>
+                                        <button className="btn btn-warning me-2" onClick={() => handleEdit(image.id)}>
+                                            Edit
+                                        </button>
+                                        <button className="btn btn-danger" onClick={() => handleDelete(image.id)}>
+                                            Delete
+                                        </button>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>
                 ))}
             </div>
+
         </div>
     );
 }
