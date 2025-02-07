@@ -55,7 +55,9 @@ export async function GET(request: Request) {
                 OR:[
                     {title: {contains: searchQuery}},
                     {description: {contains: searchQuery}},
+                    {tags: {some: {name: {contains: searchQuery}}}},
                 ],
+                ...(tag ? {tags: {some: {name: tag}}}: {})
             },
             select: {
                 id: true,

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Image from 'next/image';
 
 interface Image {
     id: number;
@@ -19,6 +20,7 @@ export default function Gallery() {
     const [description, setDescription] = useState('');
     const [tags, setTags] = useState('');
     const [editingImageId, setEditingImageId] = useState<number | null>(null);
+    const [showForm, setShowForm] = useState(false);
 
     useEffect(() => {
         fetchImages();
@@ -57,11 +59,16 @@ export default function Gallery() {
 
     async function handleSave(image: Image) {
         try {
+            const updatedTags = Array.isArray(image.tags)
+                ? image.tags.map(tag => tag.name).join(', ')
+                : image.tags;
+
             await axios.put(`/api/images/${image.id}`, {
                 title: image.title,
                 description: image.description,
-                tags: image.tags,
+                tags: updatedTags,
             });
+
             fetchImages();
             setEditingImageId(null);
         } catch (error) {
@@ -84,6 +91,7 @@ export default function Gallery() {
         setTags('');
         setSelectedImage(null);
         setEditingImageId(null);
+        setShowForm(false);
     }
 
     function handleChange(imageId: number, field: keyof Image, value: string) {
@@ -96,42 +104,55 @@ export default function Gallery() {
         <div className="container mt-5">
             <h2 className="mb-4">Gallery</h2>
 
-            <div className="mb-3">
-                <input
-                    type="file"
-                    className="form-control"
-                    onChange={(e) => setSelectedImage(e.target.files?.[0] || null)}
-                />
-                <input
-                    type="text"
-                    className="form-control mt-2"
-                    placeholder="Title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                />
-                <textarea
-                    className="form-control mt-2"
-                    placeholder="Description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                />
-                <input
-                    type="text"
-                    className="form-control mt-2"
-                    placeholder="Tags (comma separated)"
-                    value={tags}
-                    onChange={(e) => setTags(e.target.value)}
-                />
-                <button className="btn btn-primary mt-2" onClick={handleUpload}>
-                    Upload
-                </button>
-            </div>
+            <button className={"btn btn-primary mb-3"} onClick={()=> setShowForm(!showForm)}>
+                {showForm ? "Hide Form" : "Add Image"}
+            </button>
+
+            {showForm && (
+                <div className="mb-3">
+                    <input
+                        type="file"
+                        className="form-control"
+                        onChange={(e) => setSelectedImage(e.target.files?.[0] || null)}
+                    />
+                    <input
+                        type="text"
+                        className="form-control mt-2"
+                        placeholder="Title"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                    />
+                    <textarea
+                        className="form-control mt-2"
+                        placeholder="Description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                    />
+                    <input
+                        type="text"
+                        className="form-control mt-2"
+                        placeholder="Tags (comma separated)"
+                        value={tags}
+                        onChange={(e) => setTags(e.target.value)}
+                    />
+                    <button className="btn btn-primary mt-2" onClick={handleUpload}>
+                        Upload
+                    </button>
+                </div>
+            )}
+
 
             <div className="row">
                 {images.map((image) => (
                     <div key={image.id} className="col-md-4 mb-3">
                         <div className="card">
-                            <img src={`/images/${image.filename}`} className="card-img-top" alt={image.title} />
+                            <Image
+                                src={`/images/${image.filename}`}
+                                alt={image.title}
+                                width={2000}
+                                height={2000}
+                                className={"img-fluid card-img-top"}
+                            />
                             <div className="card-body">
                                 {editingImageId === image.id ? (
                                     <>

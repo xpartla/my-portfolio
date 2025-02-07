@@ -26,7 +26,7 @@ export default function Header() {
         else{
             params.delete(key);
         }
-        router.push(`?${params.toString()}`);
+        router.push(`gallery/?${params.toString()}`);
     };
 
     return (

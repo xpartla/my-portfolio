@@ -29,7 +29,7 @@ export default async function Home() {
     return (
         <div className={"row"}>
             {/*Film Gallery*/}
-            <div className={"col-md-6 text-center"}>
+            <div className={"col-md-6 text-center"} style={{background: "#D0B18A"}}>
                 <h2>Film Photography</h2>
                 <GalleryGrid images={filmImages}/>
                 <Link href={"/gallery?tag=film"}>
@@ -37,7 +37,7 @@ export default async function Home() {
                 </Link>
             </div>
             {/* Digital gallery */}
-            <div className={"col-md-6 text-center"}>
+            <div className={"col-md-6 text-center"} style={{background: "black"}}>
                 <h2>Digital Photography</h2>
                 <GalleryGrid images={digitalImages}/>
                 <Link href={"/gallery?tag=digital"}>
