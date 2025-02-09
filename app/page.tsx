@@ -1,5 +1,6 @@
 import Link from "next/link";
 import GalleryGrid from "@/components/GalleryGrid";
+import sizeOf from 'image-size'
 
 type Image = {
     id: number;
@@ -21,53 +22,69 @@ async function fetchImages(tag:string): Promise<Image[]> {
     }));
 }
 
-function getRandomImages(images:Image[], count:number = 6):Image[] {
+function getRandomImages(images:Image[], count:number = 8):Image[] {
     return images
         .sort(()=> Math.random() - 0.5)
         .slice(0, count);
 }
 
-function balanceImages(images:Image[]): Image[]{
-    const landscapes = images.filter(img => img.src.includes('landscape'));
-    const portraits = images.filter(img => !img.src.includes('portrait'));
-
-    if (landscapes.length % 2 !== 0){
-        landscapes.pop();
+function checkLandscape(image:Image):boolean {
+    const size = sizeOf("public/" + image.src)
+    if(!size.width || !size.height) {
+        return false;
     }
+    return size.width > size.height;
+}
 
-    const arrangedImages: Image[] = [];
-    while (landscapes.length >=2){
-        arrangedImages.push(landscapes.shift()!);
-        arrangedImages.push(landscapes.shift()!);
-        if (portraits.length){
-            arrangedImages.push(portraits.shift()!);
+function fixImageOrder(images:Image[]):Image[] {
+    for (let i = 0; i < images.length; i++) {
+        if (!images[i] || !images[i+1]){break}
+
+        if (checkLandscape(images[i])) {
+            if(checkLandscape(images[i+1])) {
+                continue;
+            }
+            if (images[i+2] && checkLandscape(images[i+2])) {
+                images.splice(i+2, 0, images.pop()!)
+            }
         }
     }
-    arrangedImages.push(...portraits);
-    return arrangedImages;
+    if(!checkLandscapeCount(images)) {
+        images.pop();
+        return images;
+    }
+    return images;
 }
 
-function balanceGallery(filmImages: Image[], digitalImages: Image[]): { film: Image[], digital: Image[] } {
-    filmImages = balanceImages(filmImages);
-    digitalImages = balanceImages(digitalImages);
-
-    while (filmImages.length > digitalImages.length) {
-        filmImages.pop();
+function fixImageCount(images:Image[]):Image[] {
+    if(checkLandscapeCount(images)){
+        images.pop();
     }
-    while (digitalImages.length > filmImages.length) {
-        digitalImages.pop();
-    }
+    return images;
 
-    return { film: filmImages, digital: digitalImages };
 }
+
+function checkLandscapeCount(images:Image[]):boolean {
+    let landscapeCount = 0;
+    for (let i = 0; i < images.length; i++) {
+        if (checkLandscape(images[i])){
+            landscapeCount++;
+        }
+    }
+    console.log("landscapes:" + landscapeCount);
+    console.log("length:" + images.length);
+    console.log (landscapeCount % 2);
+    return landscapeCount % 2 === 0 || landscapeCount === 0;
+}
+
 
 export default async function Home() {
     const filmImages = getRandomImages(await fetchImages('film'));
     const digitalImages = getRandomImages(await fetchImages('digital'));
-    const {film, digital} = balanceGallery(filmImages, digitalImages);
+    const film = fixImageOrder(filmImages);
+    const digital = fixImageOrder(digitalImages);
     return (
         <div className={"row"}>
-            {/*Film Gallery*/}
             <div className={"col-md-6 text-center"}>
                 <h2>Film Photography</h2>
                 <GalleryGrid images={film}/>
@@ -75,7 +92,6 @@ export default async function Home() {
                     <button className={"btn btn-primary mt-3"}>Explore film</button>
                 </Link>
             </div>
-            {/* Digital gallery */}
             <div className={"col-md-6 text-center"}>
                 <h2>Digital Photography</h2>
                 <GalleryGrid images={digital}/>
