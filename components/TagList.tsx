@@ -7,7 +7,7 @@ import {FaChevronDown, FaChevronUp } from "react-icons/fa"
 export default function TagList({onTagSelect}:{onTagSelect:(tag:string)=>void}) {
     const [tags, setTags] = useState<string[]>([]);
     const [visibleTags, setVisibleTags] = useState<number>(0);
-    const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
+    const [windowWidth, setWindowWidth] = useState<number>(0);
     const [showAllTags, setShowAllTags] = useState<boolean>(false);
 
     useEffect(() => {
@@ -23,7 +23,7 @@ export default function TagList({onTagSelect}:{onTagSelect:(tag:string)=>void}) 
             }
         };
         fetchTags();
-
+        setWindowWidth(window.innerWidth);
         const handleResize = () =>{
             setWindowWidth(window.innerWidth);
             updateVisibleTags(window.innerWidth);
