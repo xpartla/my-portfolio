@@ -27,20 +27,38 @@ function getRandomImages(images:Image[], count:number = 6):Image[] {
         .slice(0, count);
 }
 
-function balanceGallery(filmImages: Image[], digitalImages:Image[]):{film: Image[], digital: Image[]}{
-    let filmCount = filmImages.length;
-    let digitalCount = digitalImages.length;
-    while (filmCount !== digitalCount) {
-        if (filmCount > digitalCount) {
-            filmImages.pop();
-            filmCount--;
-        }
-        else{
-            digitalImages.pop();
-            digitalCount--;
+function balanceImages(images:Image[]): Image[]{
+    const landscapes = images.filter(img => img.src.includes('landscape'));
+    const portraits = images.filter(img => !img.src.includes('portrait'));
+
+    if (landscapes.length % 2 !== 0){
+        landscapes.pop();
+    }
+
+    const arrangedImages: Image[] = [];
+    while (landscapes.length >=2){
+        arrangedImages.push(landscapes.shift()!);
+        arrangedImages.push(landscapes.shift()!);
+        if (portraits.length){
+            arrangedImages.push(portraits.shift()!);
         }
     }
-    return {film:filmImages, digital:digitalImages};
+    arrangedImages.push(...portraits);
+    return arrangedImages;
+}
+
+function balanceGallery(filmImages: Image[], digitalImages: Image[]): { film: Image[], digital: Image[] } {
+    filmImages = balanceImages(filmImages);
+    digitalImages = balanceImages(digitalImages);
+
+    while (filmImages.length > digitalImages.length) {
+        filmImages.pop();
+    }
+    while (digitalImages.length > filmImages.length) {
+        digitalImages.pop();
+    }
+
+    return { film: filmImages, digital: digitalImages };
 }
 
 export default async function Home() {
