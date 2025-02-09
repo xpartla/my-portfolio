@@ -5,7 +5,16 @@ const prisma = new PrismaClient()
 
 export async function GET(){
     try {
-        const tags = await prisma.tag.findMany();
+        const tags = await prisma.tag.findMany({
+            include: {
+                _count: {
+                    select: {images: true}
+                }
+            },
+            orderBy:{
+                images: {_count: "desc"}
+            }
+        });
         return NextResponse.json(tags);
     }
     catch(err){

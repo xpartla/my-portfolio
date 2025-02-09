@@ -97,3 +97,40 @@ a {
     width: 80%;
   }
 }
+
+.gallery-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-auto-rows: 150px;
+  gap: 15px;
+  padding: 20px;
+  grid-auto-flow: dense;
+}
+.portrait{
+  grid-column: span 1;
+  grid-row: span 2;
+}
+
+.landscape{
+  grid-column: span 2;
+  grid-row: span 1;
+}
+
+.gallery-item{
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+.gallery-image {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  object-fit: cover;
+  transition: transform 0.3s ease-in-out;
+}
+
+.gallery-item:hover .gallery-image {
+  transform: scale(1.05);
+}

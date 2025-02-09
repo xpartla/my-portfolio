@@ -21,17 +21,38 @@ async function fetchImages(tag:string): Promise<Image[]> {
     }));
 }
 
+function getRandomImages(images:Image[], count:number = 6):Image[] {
+    return images
+        .sort(()=> Math.random() - 0.5)
+        .slice(0, count);
+}
+
+function balanceGallery(filmImages: Image[], digitalImages:Image[]):{film: Image[], digital: Image[]}{
+    let filmCount = filmImages.length;
+    let digitalCount = digitalImages.length;
+    while (filmCount !== digitalCount) {
+        if (filmCount > digitalCount) {
+            filmImages.pop();
+            filmCount--;
+        }
+        else{
+            digitalImages.pop();
+            digitalCount--;
+        }
+    }
+    return {film:filmImages, digital:digitalImages};
+}
 
 export default async function Home() {
-    const filmImages = await fetchImages('film');
-    const digitalImages = await fetchImages('digital');
-
+    const filmImages = getRandomImages(await fetchImages('film'));
+    const digitalImages = getRandomImages(await fetchImages('digital'));
+    const {film, digital} = balanceGallery(filmImages, digitalImages);
     return (
         <div className={"row"}>
             {/*Film Gallery*/}
             <div className={"col-md-6 text-center"}>
                 <h2>Film Photography</h2>
-                <GalleryGrid images={filmImages}/>
+                <GalleryGrid images={film}/>
                 <Link href={"/gallery?tag=film"}>
                     <button className={"btn btn-primary mt-3"}>Explore film</button>
                 </Link>
@@ -39,7 +60,7 @@ export default async function Home() {
             {/* Digital gallery */}
             <div className={"col-md-6 text-center"}>
                 <h2>Digital Photography</h2>
-                <GalleryGrid images={digitalImages}/>
+                <GalleryGrid images={digital}/>
                 <Link href={"/gallery?tag=digital"}>
                     <button className={"btn btn-primary mt-3"}>Explore Digital</button>
                 </Link>
