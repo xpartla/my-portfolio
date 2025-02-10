@@ -1,6 +1,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-poppins: "Poppins", sans-serif;
+  --font-cormorant-garamond: "Cormorant Garamond", serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -137,4 +139,32 @@ a {
 
 .gallery-item:hover .gallery-image {
   transform: scale(1.05);
+}
+
+.digital-large-heading{
+  font-family: var(--font-poppins);
+  font-weight: 200;
+  color: var(--foreground);
+  font-size: 3rem;
+}
+
+.film-large-heading{
+  font-family: var(--font-cormorant-garamond);
+  font-weight: 300;
+  color: var(--foreground);
+  font-size: 3rem;
+}
+
+.logo-text{
+  font-family: var(--font-poppins);
+  font-weight: 100;
+  color: var(--foreground);
+  font-size: 1.5rem;
+  margin-left: 1rem;
+  margin-right: -2rem;
+  margin-bottom: 2rem;
+}
+
+.logo-fix{
+  margin-top: -1rem;
 }

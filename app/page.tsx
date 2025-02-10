@@ -2,6 +2,7 @@ import Link from "next/link";
 import GalleryGrid from "@/components/GalleryGrid";
 import sizeOf from 'image-size'
 
+
 type Image = {
     id: number;
     filename: string;
@@ -49,32 +50,7 @@ function fixImageOrder(images:Image[]):Image[] {
             }
         }
     }
-    if(!checkLandscapeCount(images)) {
-        images.pop();
-        return images;
-    }
-    return images;
-}
-
-function fixImageCount(images:Image[]):Image[] {
-    if(checkLandscapeCount(images)){
-        images.pop();
-    }
-    return images;
-
-}
-
-function checkLandscapeCount(images:Image[]):boolean {
-    let landscapeCount = 0;
-    for (let i = 0; i < images.length; i++) {
-        if (checkLandscape(images[i])){
-            landscapeCount++;
-        }
-    }
-    console.log("landscapes:" + landscapeCount);
-    console.log("length:" + images.length);
-    console.log (landscapeCount % 2);
-    return landscapeCount % 2 === 0 || landscapeCount === 0;
+       return images;
 }
 
 
@@ -83,20 +59,21 @@ export default async function Home() {
     const digitalImages = getRandomImages(await fetchImages('digital'));
     const film = fixImageOrder(filmImages);
     const digital = fixImageOrder(digitalImages);
+    digital.pop();
     return (
         <div className={"row"}>
             <div className={"col-md-6 text-center"}>
-                <h2>Film Photography</h2>
+                <h2 className={"film-large-heading"}>Film</h2>
                 <GalleryGrid images={film}/>
                 <Link href={"/gallery?tag=film"}>
-                    <button className={"btn btn-primary mt-3"}>Explore film</button>
+                    <button className={"btn-custom mt-3"}>Explore film</button>
                 </Link>
             </div>
             <div className={"col-md-6 text-center"}>
-                <h2>Digital Photography</h2>
+                <h2 className={"digital-large-heading"}>Digital</h2>
                 <GalleryGrid images={digital}/>
                 <Link href={"/gallery?tag=digital"}>
-                    <button className={"btn btn-primary mt-3"}>Explore Digital</button>
+                    <button className={"btn-custom mt-3"}>Explore Digital</button>
                 </Link>
             </div>
         </div>

@@ -4,6 +4,7 @@ import React, {useState} from 'react';
 import { motion } from 'framer-motion'; // Import Framer Motion
 import TagList from '@/components/TagList';
 import {useRouter} from 'next/navigation';
+import Image from   'next/image';
 
 export default function Header() {
     const [searchQuery, setSearchQuery] = useState('');
@@ -36,8 +37,17 @@ export default function Header() {
 
     return (
         <header className={"my-4 row align-items-center pt-5"}>
-            <div className={"logo col-md-2 text-center"}>
-                <p>test</p>
+            <div className={"container-fluid col-md-2 text-center pb-3"}>
+                <Image
+                    src="/logo/logo-only.svg"
+                    alt="logo"
+                    width={35}
+                    height={35}
+                    className={"logo-fix"}
+                />
+                <span className={"logo-text"}>
+                    grep.photo
+                </span>
             </div>
 
             <div className={"col-md-8 d-flex justify-content-center"}>
