@@ -35,6 +35,35 @@ function checkLandscape(image:Image):boolean {
     return image.width > image.height;
 }
 
+function equalizeImagesLength(filmImages: Image[], digitalImages: Image[]): [Image[], Image[]]  {
+    while (filmImages.length > digitalImages.length) {
+        filmImages.pop()
+    }
+    while (digitalImages.length > filmImages.length) {
+        digitalImages.pop()
+    }
+    return [filmImages, digitalImages];
+}
+
+function balanceImageCount(filmImages: Image[], digitalImages: Image[]): [Image[], Image[]]  {
+    const filmLandscapes = filmImages.filter(checkLandscape);
+    const digitalLandscapes = digitalImages.filter(checkLandscape);
+    const filmPortraits = filmImages.filter(image => filmLandscapes.indexOf(image) < 0);
+    const digitalPortraits = digitalImages.filter(image => digitalLandscapes.indexOf(image) < 0);
+
+    if(filmLandscapes.length !== digitalLandscapes.length ){
+        equalizeImagesLength(filmLandscapes, digitalLandscapes);
+    }
+    if(filmPortraits.length !== digitalPortraits.length){
+        equalizeImagesLength(filmPortraits, digitalPortraits);
+    }
+
+
+    const film = getRandomImages(filmPortraits.concat(filmLandscapes));
+    const digital = getRandomImages(digitalPortraits.concat(digitalLandscapes));
+    return [film, digital];
+}
+
 function fixImageOrder(images: Image[]): Image[] {
     if (images.length < 3) return images;
 
@@ -75,8 +104,9 @@ function fixImageOrder(images: Image[]): Image[] {
 export default async function Home() {
     const filmImages = getRandomImages(await fetchImages('film'));
     const digitalImages = getRandomImages(await fetchImages('digital'));
-    const film = fixImageOrder(filmImages);
-    const digital = fixImageOrder(digitalImages);
+    let film = fixImageOrder(filmImages);
+    let digital = fixImageOrder(digitalImages);
+    [film, digital] = balanceImageCount(film, digital);
     return (
         <div className={"row"}>
             <div className={"col-md-6 text-center"}>
