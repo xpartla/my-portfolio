@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import TagList from '@/components/TagList';
 import {useRouter} from 'next/navigation';
 import Image from   'next/image';
+import Link from 'next/link';
 
 export default function Header() {
     const [searchQuery, setSearchQuery] = useState('');
@@ -57,13 +58,17 @@ export default function Header() {
                     transition = {{type: "spring", stiffness: "300", damping: 20}}
                     className = {"logo-container"}
                 >
-                    <Image
-                        src="/logo/logo-only.svg"
-                        alt="logo"
-                        width={35}
-                        height={35}
-                        className={"logo-fix"}
-                    />
+                    <Link
+                        href={"/"}
+                    >
+                        <Image
+                            src="/logo/logo-only.svg"
+                            alt="logo"
+                            width={35}
+                            height={35}
+                            className={"logo-fix"}
+                        />
+                    </Link>
                     <motion.span
                         className={"logo-text"}
                         initial = {{opacity: 1}}
