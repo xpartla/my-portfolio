@@ -2,6 +2,7 @@ import {NextResponse} from "next/server";
 import {PrismaClient} from "@prisma/client"
 import path from "path";
 import {promises as fs} from "fs";
+import imageSize from "image-size";
 
 const prisma = new PrismaClient();
 const uploadDir = path.join(process.cwd(), "public/images");
@@ -15,6 +16,12 @@ export async function POST(request: Request){
         const tags = formData.get("tags") as string;
 
         const buffer = Buffer.from(await  imageFile.arrayBuffer());
+
+        const dimensions = imageSize(buffer);
+
+        const width = dimensions.width;
+        const height = dimensions.height;
+
         const filename = `${Date.now()}-${imageFile.name}`
         const filePath = path.join(uploadDir, filename);
         await fs.writeFile(filePath, buffer);
@@ -29,6 +36,8 @@ export async function POST(request: Request){
                 filename,
                 title,
                 description,
+                width,
+                height,
                 tags:{
                     connectOrCreate: connectOrCreateTags,
                 },
@@ -65,6 +74,8 @@ export async function GET(request: Request) {
                 title: true,
                 description: true,
                 tags: {select: {name: true}},
+                width: true,
+                height: true,
             },
 
         });

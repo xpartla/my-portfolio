@@ -20,6 +20,8 @@ model Image {
   filename    String
   tags        Tag[]     @relation("ImageTags")
   createdAt   DateTime  @default(now())
+  width       Decimal?
+  height      Decimal?
 }
 
 model Tag {

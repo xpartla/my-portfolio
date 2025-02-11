@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Image" ADD COLUMN "height" DECIMAL;
+ALTER TABLE "Image" ADD COLUMN "width" DECIMAL;

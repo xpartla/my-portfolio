@@ -1,6 +1,5 @@
 import Link from "next/link";
 import GalleryGrid from "@/components/GalleryGrid";
-import sizeOf from 'image-size'
 
 
 type Image = {
@@ -10,6 +9,8 @@ type Image = {
     description: string;
     src: string;
     alt: string;
+    width: number;
+    height: number;
 };
 
 async function fetchImages(tag:string): Promise<Image[]> {
@@ -20,46 +21,62 @@ async function fetchImages(tag:string): Promise<Image[]> {
         id: img.id,
         src: `/images/${img.filename}`,
         alt: img.title,
+        width: img.width,
+        height: img.height,
     }));
 }
 
-function getRandomImages(images:Image[], count:number = 8):Image[] {
+function getRandomImages(images:Image[]):Image[] {
     return images
         .sort(()=> Math.random() - 0.5)
-        .slice(0, count);
 }
 
 function checkLandscape(image:Image):boolean {
-    const size = sizeOf("public/" + image.src)
-    if(!size.width || !size.height) {
-        return false;
-    }
-    return size.width > size.height;
+    return image.width > image.height;
 }
 
-function fixImageOrder(images:Image[]):Image[] {
-    for (let i = 0; i < images.length; i++) {
-        if (!images[i] || !images[i+1]){break}
+function fixImageOrder(images: Image[]): Image[] {
+    if (images.length < 3) return images;
 
-        if (checkLandscape(images[i])) {
-            if(checkLandscape(images[i+1])) {
+    const fixedImages: Image[] = [];
+
+    for (let i = 0; i < images.length; i++) {
+        const img = images[i];
+        if (checkLandscape(img)) {
+            const prev1 = fixedImages[fixedImages.length - 1];
+            const prev2 = fixedImages[fixedImages.length - 2];
+
+            if (
+                prev1 && prev2 &&
+                !(checkLandscape(prev1) || (!checkLandscape(prev1) && !checkLandscape(prev2)))
+            ) {
                 continue;
             }
-            if (images[i+2] && checkLandscape(images[i+2])) {
-                images.splice(i+2, 0, images.pop()!)
+            const next1 = images[i + 1];
+            const next2 = images[i + 2];
+
+            if (next1 && !checkLandscape(next1)) {
+                if (next2 && !checkLandscape(next2)) {
+                    fixedImages.push(img, next1, next2);
+                    i += 2;
+                }
+            } else if (next1 && checkLandscape(next1)) {
+                fixedImages.push(img, next1);
+                i += 1;
             }
+        } else {
+            fixedImages.push(img);
         }
     }
-       return images;
-}
 
+    return fixedImages;
+}
 
 export default async function Home() {
     const filmImages = getRandomImages(await fetchImages('film'));
     const digitalImages = getRandomImages(await fetchImages('digital'));
     const film = fixImageOrder(filmImages);
     const digital = fixImageOrder(digitalImages);
-    digital.pop();
     return (
         <div className={"row"}>
             <div className={"col-md-6 text-center"}>
