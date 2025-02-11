@@ -168,3 +168,7 @@ a {
 .logo-fix{
   margin-top: -1rem;
 }
+
+.logo-container{
+  margin-top: .75rem;
+}

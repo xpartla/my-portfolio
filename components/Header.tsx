@@ -1,15 +1,28 @@
 'use client';
 
-import React, {useState} from 'react';
-import { motion } from 'framer-motion'; // Import Framer Motion
+import React, {useState, useEffect} from 'react';
+import { motion } from 'framer-motion';
 import TagList from '@/components/TagList';
 import {useRouter} from 'next/navigation';
 import Image from   'next/image';
 
 export default function Header() {
     const [searchQuery, setSearchQuery] = useState('');
-    const [isFocused, setIsFocused] = useState(false); // Track focus state
+    const [isFocused, setIsFocused] = useState(false);
+    const [isLargeScreen, setIsLargeScreen] = useState(false);
     const router = useRouter();
+
+    useEffect(() => {
+        const handleResize = () => {
+            const width = window.innerWidth;
+            setIsLargeScreen(width > 1212 || width < 769);
+        };
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        }
+    }, []);
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newSearchQuery = event.target.value;
@@ -38,16 +51,28 @@ export default function Header() {
     return (
         <header className={"my-4 row align-items-center pt-5"}>
             <div className={"container-fluid col-md-2 text-center pb-3"}>
-                <Image
-                    src="/logo/logo-only.svg"
-                    alt="logo"
-                    width={35}
-                    height={35}
-                    className={"logo-fix"}
-                />
-                <span className={"logo-text"}>
+                <motion.div
+                    initial = {{x:0}}
+                    animate = {{x: isFocused && isLargeScreen ? 50 : 0}}
+                    transition = {{type: "spring", stiffness: "300", damping: 20}}
+                    className = {"logo-container"}
+                >
+                    <Image
+                        src="/logo/logo-only.svg"
+                        alt="logo"
+                        width={35}
+                        height={35}
+                        className={"logo-fix"}
+                    />
+                    <motion.span
+                        className={"logo-text"}
+                        initial = {{opacity: 1}}
+                        animate = {{opacity: isFocused && isLargeScreen ? 0 : 1}}
+                        transition = {{duration: 0.3}}
+                    >
                     grep.photo
-                </span>
+                </motion.span>
+                </motion.div>
             </div>
 
             <div className={"col-md-8 d-flex justify-content-center"}>
