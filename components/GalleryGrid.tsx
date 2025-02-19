@@ -8,6 +8,8 @@ type ImageProps = {
     id:number;
     src: string;
     alt: string;
+    title: string;
+    description: string;
 };
 
 export default function GalleryGrid({images}: {images: ImageProps[]}) {

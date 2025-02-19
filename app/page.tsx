@@ -23,6 +23,8 @@ async function fetchImages(tag:string): Promise<Image[]> {
         alt: img.title,
         width: img.width,
         height: img.height,
+        description: img.description,
+        title: img.title
     }));
 }
 
