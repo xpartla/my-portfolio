@@ -23,15 +23,17 @@ export default function ImageModal({image, onClose}: ImageModalProps) {
             onClick={onClose}
         >
             <div className={"col-md-6"}>
-                <div className={"image-border-wrapper"}>
-                    <Image
-                        src={image.src}
-                        alt={image.alt}
-                        width={800}
-                        height={600}
-                        className="modal-image"
-                        onClick={(e) => e.stopPropagation()}
-                    />
+                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                    <div className={"image-border-wrapper"}>
+                        <Image
+                            src={image.src}
+                            alt={image.alt}
+                            width={1000}
+                            height={1000}
+                            className="modal-image"
+                            onClick={(e) => e.stopPropagation()}
+                        />
+                    </div>
                 </div>
             </div>
             <motion.div

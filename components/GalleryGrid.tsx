@@ -37,6 +37,7 @@ export default function GalleryGrid({images}: {images: ImageProps[]}) {
                             src={image.src}
                             alt={image.alt}
                             fill
+                            loading={"lazy"}
                             className="gallery-image"
                             onLoadingComplete={(img) => {
                                 setImageSizes((prev) => ({
