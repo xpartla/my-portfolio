@@ -13,7 +13,7 @@ export default function TagList({onTagSelect}:{onTagSelect:(tag:string)=>void}) 
     useEffect(() => {
         const fetchTags = async () => {
             try {
-                const response = await fetch("/api/tags");
+                const response = await fetch("/api/tags", { cache: "no-store" });
                 const json = await response.json();
                 setTags(json.map((tag: {name:string}) => tag.name));
                 updateVisibleTags(window.innerWidth);

@@ -7,7 +7,19 @@ type Image = {
     id:number,
     src: string;
     alt: string;
+    title: string;
+    description: string;
 };
+
+type ApiImage = {
+    id: number;
+    filename: string;
+    title: string;
+    description: string;
+    width: number;
+    height: number;
+};
+
 
 export default function GalleryCategoryPage(){
     const searchParams = useSearchParams();
@@ -18,12 +30,14 @@ export default function GalleryCategoryPage(){
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await fetch(`/api/images?tag=${selectedTag}&search=${searchQuery}`);
-                const data = await res.json();
-                setImages(data.map((img: any) => ({
+                const res = await fetch(`/api/images?tag=${selectedTag}&search=${searchQuery}`, { cache: "no-store" });
+                const data: ApiImage[] = await res.json();
+                setImages(data.map((img) => ({
                     id: img.id,
                     src: `/images/${img.filename}`,
                     alt: img.title,
+                    title: img.title,
+                    description: img.description,
                 })));
             }
             catch(err){
