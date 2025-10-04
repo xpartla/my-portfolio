@@ -55,7 +55,7 @@ export default function Header() {
                 <motion.div
                     initial = {{x:0}}
                     animate = {{x: isFocused && isLargeScreen ? 50 : 0}}
-                    transition = {{type: "spring", stiffness: "300", damping: 20}}
+                    transition = {{type: "spring", stiffness: 300, damping: 20}}
                     className = {"logo-container"}
                 >
                     <Link
