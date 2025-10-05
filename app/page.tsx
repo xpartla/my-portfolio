@@ -14,7 +14,7 @@ type Image = {
 };
 
 async function fetchImages(tag:string): Promise<Image[]> {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
     const res = await fetch(`${baseUrl}/api/images?tag=${tag}`, { cache: "no-store" });
     const data = await res.json();
     return data.map((img: Image) => ({

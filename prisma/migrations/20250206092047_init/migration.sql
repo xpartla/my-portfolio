@@ -1,25 +1,25 @@
 -- CreateTable
 CREATE TABLE "Image" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "title" TEXT NOT NULL,
-    "description" TEXT,
-    "filename" TEXT NOT NULL,
-    "category" TEXT NOT NULL,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+                         id SERIAL PRIMARY KEY,
+                         title TEXT NOT NULL,
+                         description TEXT,
+                         filename TEXT NOT NULL,
+                         category TEXT NOT NULL,
+                         createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- CreateTable
 CREATE TABLE "Tag" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "name" TEXT NOT NULL
+                       id SERIAL PRIMARY KEY,
+                       name TEXT NOT NULL
 );
 
 -- CreateTable
 CREATE TABLE "_ImageTags" (
-    "A" INTEGER NOT NULL,
-    "B" INTEGER NOT NULL,
-    CONSTRAINT "_ImageTags_A_fkey" FOREIGN KEY ("A") REFERENCES "Image" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT "_ImageTags_B_fkey" FOREIGN KEY ("B") REFERENCES "Tag" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+                              "A" INTEGER NOT NULL,
+                              "B" INTEGER NOT NULL,
+                              CONSTRAINT "_ImageTags_A_fkey" FOREIGN KEY ("A") REFERENCES "Image" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+                              CONSTRAINT "_ImageTags_B_fkey" FOREIGN KEY ("B") REFERENCES "Tag" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateIndex
