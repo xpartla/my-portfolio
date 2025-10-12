@@ -1,6 +1,6 @@
 import Link from "next/link";
 import GalleryGrid from "@/components/GalleryGrid";
-
+const IMAGEURL = process.env.NEXT_PUBLIC_IMAGE_BASEURL;
 
 type Image = {
     id: number;
@@ -19,7 +19,7 @@ async function fetchImages(tag:string): Promise<Image[]> {
     const data = await res.json();
     return data.map((img: Image) => ({
         id: img.id,
-        src: `/images/${img.filename}`,
+        src: `${IMAGEURL}/${img.filename}`,
         alt: img.title,
         width: img.width,
         height: img.height,

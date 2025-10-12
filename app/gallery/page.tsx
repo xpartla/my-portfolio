@@ -2,6 +2,7 @@
 import {useSearchParams} from 'next/navigation';
 import {useEffect, useState} from 'react';
 import GalleryGrid from "@/components/GalleryGrid";
+const IMAGEURL = process.env.NEXT_PUBLIC_IMAGE_BASEURL;
 
 type Image = {
     id:number,
@@ -34,7 +35,7 @@ export default function GalleryCategoryPage(){
                 const data: ApiImage[] = await res.json();
                 setImages(data.map((img) => ({
                     id: img.id,
-                    src: `/images/${img.filename}`,
+                    src: `${IMAGEURL}/${img.filename}`,
                     alt: img.title,
                     title: img.title,
                     description: img.description,

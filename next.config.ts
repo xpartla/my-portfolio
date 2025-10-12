@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+    images: {
+        unoptimized: true,
+        domains: ['portfolioappimages.blob.core.windows.net']
+    },
 };
 
 export default nextConfig;
