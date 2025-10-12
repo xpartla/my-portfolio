@@ -14,6 +14,7 @@ interface Image {
 }
 
 export default function Gallery() {
+    const IMAGEURL = process.env.NEXT_PUBLIC_IMAGE_BASEURL;
     const [images, setImages] = useState<Image[]>([]);
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [title, setTitle] = useState('');
@@ -147,7 +148,7 @@ export default function Gallery() {
                     <div key={image.id} className="col-md-4 mb-3">
                         <div className="card">
                             <Image
-                                src={`/images/${image.filename}`}
+                                src={`${IMAGEURL}/${image.filename}`}
                                 alt={image.title}
                                 width={2000}
                                 height={2000}
